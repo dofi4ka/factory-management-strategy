@@ -3,7 +3,7 @@ package main
 import "core:fmt"
 import rl "vendor:raylib"
 
-UNIT_SIZE :: 16
+UNIT_SIZE :: 64
 
 main :: proc() {
 	fmt.println("Hellope!")
@@ -34,6 +34,7 @@ main :: proc() {
 			rl.BeginMode2D(camera.rl_camera)
 			{
 				render_terrain(terrain_map)
+				render_player(player)
 			}
 			rl.EndMode2D()
 		}
@@ -42,7 +43,6 @@ main :: proc() {
 }
 
 // TODO:
-// show a player
 // let player fly around
 // add sprites for wall, floor, water, ores/
 // ...
