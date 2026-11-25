@@ -14,18 +14,18 @@ main :: proc() {
 	}
 
 	rl.InitWindow(800, 500, "Larpdustry")
+	rl.ToggleBorderlessWindowed()
 	rl.SetTargetFPS(60)
 
-	player_pos := rl.Vector2 {
-		cast(f32)terrain_map.width * UNIT_SIZE / 2,
-		cast(f32)terrain_map.height * UNIT_SIZE / 2,
-	}
+	player := Player{}
+	init_player(&player, terrain_map)
 
 	camera := Camera{}
-	init_camera(&camera, player_pos)
+	init_camera(&camera, player.pos)
 
 	for !rl.WindowShouldClose() {
-		update_camera(&camera, player_pos)
+		update_player(&player)
+		update_camera(&camera, player.pos)
 
 		rl.BeginDrawing()
 		{
