@@ -1,6 +1,7 @@
 package main
 
 import "core:fmt"
+import "core:math"
 import rl "vendor:raylib"
 
 TerrainType :: enum {
@@ -59,6 +60,21 @@ load_terrain_map :: proc() -> (TerrainMap, bool) {
 }
 
 
+UNIT_SIZE :: 16
+
+MIN_ZOOM :: 0.125
+MAX_ZOOM :: 16.0
+
+update_zoom :: proc(camera: ^rl.Camera2D, desired_zoom: ^f32) {
+	wheel := rl.GetMouseWheelMoveV().y
+	if wheel != 0 {
+		desired_zoom^ = clamp(desired_zoom^ * math.pow(f32(1.15), wheel), MIN_ZOOM, MAX_ZOOM)
+	}
+
+	alpha := 1.0 - math.exp(-18.0 * rl.GetFrameTime())
+	camera.zoom *= math.pow(desired_zoom^ / camera.zoom, alpha)
+}
+
 main :: proc() {
 	fmt.println("Hellope!")
 
@@ -70,22 +86,42 @@ main :: proc() {
 	rl.InitWindow(800, 500, "Larpdustry")
 	rl.SetTargetFPS(60)
 
+	player_pos := rl.Vector2 {
+		cast(f32)terrain_map.width * UNIT_SIZE / 2,
+		cast(f32)terrain_map.height * UNIT_SIZE / 2,
+	}
+
+	camera := rl.Camera2D {
+		rl.Vector2{cast(f32)rl.GetRenderWidth() / 2.0, cast(f32)rl.GetRenderHeight() / 2.0},
+		player_pos,
+		0,
+		1.0,
+	}
+	desired_zoom := camera.zoom
+
 	for !rl.WindowShouldClose() {
+
 		rl.BeginDrawing()
 		{
 			rl.ClearBackground(rl.BLACK)
 
-			for x in 0 ..< terrain_map.width {
-				for y in 0 ..< terrain_map.height {
-					rl.DrawRectangle(
-						x * 10,
-						y * 10,
-						10,
-						10,
-						TerrainColors[get_terrain_at(terrain_map, x, y)],
-					)
+			update_zoom(&camera, &desired_zoom)
+
+			rl.BeginMode2D(camera)
+			{
+				for x in 0 ..< terrain_map.width {
+					for y in 0 ..< terrain_map.height {
+						rl.DrawRectangle(
+							x * UNIT_SIZE,
+							y * UNIT_SIZE,
+							UNIT_SIZE,
+							UNIT_SIZE,
+							TerrainColors[get_terrain_at(terrain_map, x, y)],
+						)
+					}
 				}
 			}
+			rl.EndMode2D()
 		}
 		rl.EndDrawing()
 	}
