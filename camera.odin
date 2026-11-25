@@ -36,5 +36,6 @@ update_camera :: proc(camera: ^Camera, target: rl.Vector2) {
 
 init_camera :: proc(camera: ^Camera, target: rl.Vector2) {
 	camera.desired_zoom = 1.0
+	camera.rl_camera.zoom = 1.0
 	update_camera(camera, target)
 }
