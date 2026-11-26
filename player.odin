@@ -3,6 +3,11 @@ package main
 import "core:math"
 import rl "vendor:raylib"
 
+PLAYER_SPEED :: UNIT_SIZE * 20
+PLAYER_SIZE :: UNIT_SIZE * 1.5
+TURN_RATE :: 10
+ACCELERATION :: 5
+
 Player :: struct {
 	pos:              rl.Vector2,
 	rotation:         f32,
@@ -13,21 +18,16 @@ Player :: struct {
 	texture:          rl.Texture2D,
 }
 
-init_player :: proc(player: ^Player, terrain_map: TerrainMap) {
-	player.pos = rl.Vector2 {
-		cast(f32)terrain_map.width * UNIT_SIZE / 2,
-		cast(f32)terrain_map.height * UNIT_SIZE / 2,
+init_player :: proc(game: ^Game) {
+	game.player.pos = rl.Vector2 {
+		cast(f32)game.terrain.width * UNIT_SIZE / 2,
+		cast(f32)game.terrain.height * UNIT_SIZE / 2,
 	}
 
-	player.texture = rl.LoadTexture("assets/player.png")
-	player.scale = PLAYER_SIZE / cast(f32)player.texture.width
-	player.rotation = 0
+	game.player.texture = rl.LoadTexture("assets/player.png")
+	game.player.scale = PLAYER_SIZE / cast(f32)game.player.texture.width
+	game.player.rotation = 0
 }
-
-PLAYER_SPEED :: UNIT_SIZE * 20
-PLAYER_SIZE :: UNIT_SIZE * 1.5
-TURN_RATE :: 10
-ACCELERATION :: 5
 
 _update_player_rotation :: proc(player: ^Player) {
 	t := 1.0 - math.exp(-(TURN_RATE * player.speed / PLAYER_SPEED) * rl.GetFrameTime())

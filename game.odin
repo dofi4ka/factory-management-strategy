@@ -4,24 +4,23 @@ import "core:fmt"
 import rl "vendor:raylib"
 
 Game :: struct {
-	camera:      Camera,
-	terrain_map: TerrainMap,
-	player:      Player,
+	camera:  Camera,
+	terrain: TerrainMap,
+	player:  Player,
 }
 
 init_game :: proc(game: ^Game) {
-	terrain_map, ok := load_terrain_map()
-	if !ok {
-		fmt.panicf("Failed to load map")
-	}
-
 	rl.InitWindow(800, 500, "Larpdustry")
 	rl.ToggleBorderlessWindowed()
 	rl.SetTargetFPS(60)
 
-	load_terrain_textures()
-	init_player(&game.player, terrain_map)
-	init_camera(&game.camera, game.player.pos)
+
+	ok := load_terrain(game)
+	if !ok {
+		fmt.panicf("Failed to load map")
+	}
+	init_player(game)
+	init_camera(game)
 }
 
 update_game :: proc(game: ^Game) {
@@ -30,10 +29,10 @@ update_game :: proc(game: ^Game) {
 }
 
 _render_game2dmode :: proc(game: Game) {
-	rl.BeginMode2D(game.camera.rl_camera)
+	rl.BeginMode2D(game.camera)
 	defer rl.EndMode2D()
 
-	render_terrain(game.terrain_map)
+	render_terrain(game.terrain)
 	render_player(game.player)
 }
 
