@@ -13,10 +13,12 @@ main :: proc() {
 		fmt.panicf("Failed to load map")
 	}
 
+
 	rl.InitWindow(800, 500, "Larpdustry")
 	rl.ToggleBorderlessWindowed()
 	rl.SetTargetFPS(60)
 
+	load_terrain_textures()
 	player := Player{}
 	init_player(&player, terrain_map)
 
@@ -42,6 +44,8 @@ main :: proc() {
 	}
 }
 
-// TODO:
-// add sprites for wall, floor, water, ores/
-// ...
+
+// TODO: add simple interface with buildings
+// TODO: let place buildings
+// TODO: add mechanic of mining ores manually
+// TODO: add cost and build time to buildings

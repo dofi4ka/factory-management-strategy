@@ -1,7 +1,5 @@
 package main
 
-import "core:fmt"
-import "core:math"
 import rl "vendor:raylib"
 
 
@@ -23,6 +21,18 @@ TerrainColors := [TerrainType]rl.Color {
 	.Carbon = rl.Color{202, 69, 105, 255},
 }
 
+TerrainTextures := [TerrainType]struct {
+	texture: rl.Texture2D,
+	path:    cstring,
+} {
+	.Wall = {path = "assets/wall.png"},
+	.Floor = {path = "assets/floor.png"},
+	.Water = {path = "assets/water.png"},
+	.Copper = {path = "assets/copper.png"},
+	.Lead = {path = "assets/lead.png"},
+	.Carbon = {path = "assets/carbon.png"},
+}
+
 TerrainMap :: struct {
 	width:  i32,
 	height: i32,
@@ -33,8 +43,14 @@ get_terrain_at :: proc(terrain_map: TerrainMap, x, y: i32) -> TerrainType {
 	return terrain_map.tiles[y * terrain_map.height + x]
 }
 
+load_terrain_textures :: proc() {
+	for &texture_data in TerrainTextures {
+		texture_data.texture = rl.LoadTexture(texture_data.path)
+	}
+}
+
 load_terrain_map :: proc() -> (TerrainMap, bool) {
-	image := rl.LoadImage("map.png")
+	image := rl.LoadImage("assets/map.png")
 	if image.data == nil {
 		return TerrainMap{}, false
 	}
@@ -64,13 +80,13 @@ load_terrain_map :: proc() -> (TerrainMap, bool) {
 render_terrain :: proc(terrain_map: TerrainMap) {
 	for x in 0 ..< terrain_map.width {
 		for y in 0 ..< terrain_map.height {
-			rl.DrawRectangle(
-				x * UNIT_SIZE,
-				y * UNIT_SIZE,
-				UNIT_SIZE,
-				UNIT_SIZE,
-				TerrainColors[get_terrain_at(terrain_map, x, y)],
-			)
+			tex := TerrainTextures[get_terrain_at(terrain_map, x, y)].texture
+			size := f32(UNIT_SIZE)
+
+			src := rl.Rectangle{0, 0, f32(tex.width), f32(tex.height)}
+			dst := rl.Rectangle{f32(y) * size, f32(x) * size, size, size}
+
+			rl.DrawTexturePro(tex, src, dst, rl.Vector2{}, 0, rl.WHITE)
 		}
 	}
 }

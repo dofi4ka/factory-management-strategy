@@ -9,6 +9,7 @@ Player :: struct {
 	desired_rotation: f32,
 	speed:            f32,
 	desired_speed:    f32,
+	scale:            f32,
 	texture:          rl.Texture2D,
 }
 
@@ -18,18 +19,13 @@ init_player :: proc(player: ^Player, terrain_map: TerrainMap) {
 		cast(f32)terrain_map.height * UNIT_SIZE / 2,
 	}
 
-	image: rl.Image = rl.LoadImage("player.png")
-
-	rl.ImageResizeNN(&image, PLAYER_SIZE, PLAYER_SIZE)
-	texture: rl.Texture2D = rl.LoadTextureFromImage(image)
-	rl.UnloadImage(image)
-
-	player.texture = texture
+	player.texture = rl.LoadTexture("assets/player.png")
+	player.scale = PLAYER_SIZE / cast(f32)player.texture.width
 	player.rotation = 0
 }
 
 PLAYER_SPEED :: UNIT_SIZE * 20
-PLAYER_SIZE :: UNIT_SIZE * 3
+PLAYER_SIZE :: UNIT_SIZE * 1.5
 TURN_RATE :: 10
 ACCELERATION :: 5
 
@@ -79,7 +75,7 @@ render_player :: proc(player: Player) {
 		rl.Vector2{player.pos.x, player.pos.y} -
 		rl.Vector2Rotate(rl.Vector2{1, 1} * PLAYER_SIZE / 2, player.rotation),
 		math.to_degrees_f32(player.rotation),
-		1.0,
+		player.scale,
 		rl.WHITE,
 	)
 }
