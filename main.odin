@@ -43,6 +43,5 @@ main :: proc() {
 }
 
 // TODO:
-// let player fly around
 // add sprites for wall, floor, water, ores/
 // ...
